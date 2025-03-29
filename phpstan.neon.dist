@@ -1,0 +1,19 @@
+parameters:
+  level: 0
+  reportUnmatchedIgnoredErrors: false
+  parallel:
+    jobSize: 20
+    maximumNumberOfProcesses: 32
+    minimumNumberOfJobsPerProcess: 2
+  ignoreErrors:
+    - '#Unsafe usage of new static#'
+services:
+  # When using `match` to match enum, the enumeration must be completely overwritten
+  - class: PHPStan\Rules\Comparison\MatchExpressionRule
+    arguments:
+      checkAlwaysTrueStrictComparison: %checkAlwaysTrueStrictComparison%
+      disableUnreachable: %featureToggles.disableUnreachableBranchesRules%
+      reportAlwaysTrueInLastCondition: %reportAlwaysTrueInLastCondition%
+      treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
+    tags:
+      - phpstan.rules.rule
