@@ -55,4 +55,17 @@ class Chat
             ],
         ]);
     }
+
+    public function messages(string $chatId, string $conversationId)
+    {
+        return $this->client->request('GET', '/v3/chat/message/list', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
+            'query' => [
+                'chat_id' => $chatId,
+                'conversation_id' => $conversationId,
+            ],
+        ]);
+    }
 }
