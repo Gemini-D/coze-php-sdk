@@ -26,7 +26,7 @@ abstract class ChatTaskRunner
     abstract public function scroll(int $id): array;
 
     /**
-     * 定时筛选.
+     * 定时处理已经调的对话任务
      */
     public function run(): void
     {
@@ -44,16 +44,25 @@ abstract class ChatTaskRunner
                         continue;
                     }
 
-                    $retrieved = $this->client->chat->retrieve($task->chatId, $task->conversationId);
-
-                    $task->isCompleted = $retrieved->isCompleted();
-
-                    $this->save($task);
+                    $this->execute($task);
                 } finally {
                     $this->unlock($id);
                 }
             }
         }
+    }
+
+    /**
+     * 执行单个对话任务，可以在定时任务之外，当提交一次对话任务后，直接在协程或者异步队列中延时执行.
+     * 具体延时时间，按照自己的业务场景而定.
+     */
+    public function execute(ChatTask $task): void
+    {
+        $retrieved = $this->client->chat->retrieve($task->chatId, $task->conversationId);
+
+        $task->isCompleted = $retrieved->isCompleted();
+
+        $this->save($task);
     }
 
     public function lock(int $id): bool
@@ -66,7 +75,7 @@ abstract class ChatTaskRunner
     }
 
     /**
-     * 保存聊天信息到表中，注意，需要保存 is_completed 字段，避免下次查询时，会查到已经执行过的聊天任务
+     * 保存对话信息到表中，注意，需要保存 is_completed 字段，避免下次查询时，会查到已经执行过的对话任务
      */
     abstract public function save(ChatTask $task): bool;
 }
