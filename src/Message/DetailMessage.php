@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Coze\Message;
 
+use Hyperf\Codec\Json;
 use Hyperf\Contract\JsonDeSerializable;
 use JsonSerializable;
 
@@ -61,5 +62,10 @@ class DetailMessage implements JsonDeSerializable, JsonSerializable
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt,
         ];
+    }
+
+    public function getContent(): array
+    {
+        return Json::decode($this->content);
     }
 }

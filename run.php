@@ -33,7 +33,7 @@ $chatId = $res['data']['id'] ?? '7487168588164399139';
 $conversationId = $res['data']['conversation_id'] ?? '7487168588164382755';
 
 $res = $client->chat->retrieve($chatId, $conversationId);
-var_dump($res);
+var_dump($res->usage);
 
 $res = $client->chat->messages($chatId, $conversationId);
-var_dump($res);
+var_dump($res->messages[0]->getContent());
