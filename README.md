@@ -1,7 +1,7 @@
 # CozePhpSdk
 
 ```
-composer create-project hyperf/component-creator
+composer require limingxinleo/coze-php-sdk
 ```
 
 ## 如何使用任务调度器
