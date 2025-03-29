@@ -1,4 +1,4 @@
-# PHPCozeSdk
+# CozePhpSdk
 
 ```
 composer create-project hyperf/component-creator
