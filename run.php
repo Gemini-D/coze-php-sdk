@@ -9,7 +9,11 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+use Coze\ChatTask;
+use Coze\ChatTaskRunner;
 use Coze\Client;
+use Coze\Message\DetailMessages;
+use Coze\Message\RetrieveMessage;
 use Coze\Token;
 
 require __DIR__ . '/vendor/autoload.php';
@@ -18,22 +22,63 @@ $token = new Token(file_get_contents('token.txt'));
 
 $client = new Client($token);
 
-// $res = $client->chat->send('7476014622794154010', '123', [
-//     [
-//         'content' => '请给我一份上海宝山的房源数据',
-//         'content_type' => 'text',
-//         'role' => 'user',
-//         'type' => 'question',
-//     ],
-// ]);
-//
-// var_dump($res);
+$res = $client->chat->send('7476014622794154010', '123', [
+    [
+        'content' => '请给我一份上海宝山的房源数据',
+        'content_type' => 'text',
+        'role' => 'user',
+        'type' => 'question',
+    ],
+]);
 
-$chatId = $res['data']['id'] ?? '7487168588164399139';
-$conversationId = $res['data']['conversation_id'] ?? '7487168588164382755';
+$task1 = ChatTask::fromRetrieveMessage($res, 1);
 
-$res = $client->chat->retrieve($chatId, $conversationId);
-var_dump($res->usage);
+$res = $client->chat->send('7476014622794154010', '1234', [
+    [
+        'content' => '请给我一份上海嘉定的房源数据',
+        'content_type' => 'text',
+        'role' => 'user',
+        'type' => 'question',
+    ],
+]);
 
-$res = $client->chat->messages($chatId, $conversationId);
-var_dump($res->messages[0]->getContent());
+$task2 = ChatTask::fromRetrieveMessage($res, 2);
+
+$runner = new class($client, [$task1, $task2]) extends ChatTaskRunner {
+    public function __construct(Client $client, public array $tasks)
+    {
+        parent::__construct($client);
+    }
+
+    public function scroll(int $id): array
+    {
+        if ($id === 0) {
+            return $this->tasks;
+        }
+
+        return [];
+    }
+
+    public function execute(ChatTask $task): void
+    {
+        var_dump('执行 ' . $task->chatId);
+        parent::execute($task);
+    }
+
+    public function save(ChatTask $task, RetrieveMessage $retrieved, DetailMessages $messages): bool
+    {
+        var_dump('执行完毕 ' . $task->chatId, $task->isCompleted);
+        var_dump($messages->withRawData());
+        return true;
+    }
+};
+
+while (true) {
+    sleep(1);
+
+    $runner->run();
+
+    if ($task1->isCompleted && $task2->isCompleted) {
+        break;
+    }
+}

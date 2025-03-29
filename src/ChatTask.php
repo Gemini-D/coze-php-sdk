@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Coze;
 
+use Coze\Message\RetrieveMessage;
+
 class ChatTask
 {
     /**
@@ -24,5 +26,16 @@ class ChatTask
         public string $conversationId,
         public bool $isCompleted
     ) {
+    }
+
+    public static function fromRetrieveMessage(RetrieveMessage $message, int $id = 0): self
+    {
+        return new self(
+            id: $id,
+            botId: $message->botId,
+            chatId: $message->chatId,
+            conversationId: $message->conversationId,
+            isCompleted: $message->isCompleted()
+        );
     }
 }

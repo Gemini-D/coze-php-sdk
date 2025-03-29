@@ -12,6 +12,9 @@ declare(strict_types=1);
 
 namespace Coze;
 
+use Coze\Message\DetailMessages;
+use Coze\Message\RetrieveMessage;
+
 abstract class ChatTaskRunner
 {
     public function __construct(public Client $client)
@@ -62,7 +65,11 @@ abstract class ChatTaskRunner
 
         $task->isCompleted = $retrieved->isCompleted();
 
-        $this->save($task);
+        if ($task->isCompleted) {
+            $messages = $this->client->chat->messages($task->chatId, $task->conversationId);
+
+            $this->save($task, $retrieved, $messages);
+        }
     }
 
     public function lock(int $id): bool
@@ -77,5 +84,5 @@ abstract class ChatTaskRunner
     /**
      * 保存对话信息到表中，注意，需要保存 is_completed 字段，避免下次查询时，会查到已经执行过的对话任务
      */
-    abstract public function save(ChatTask $task): bool;
+    abstract public function save(ChatTask $task, RetrieveMessage $retrieved, DetailMessages $messages): bool;
 }

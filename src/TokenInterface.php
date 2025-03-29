@@ -14,5 +14,5 @@ namespace Coze;
 
 interface TokenInterface
 {
-    public function getToken(): string;
+    public function getToken(mixed $key = null): string;
 }

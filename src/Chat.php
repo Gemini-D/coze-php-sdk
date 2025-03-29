@@ -30,8 +30,8 @@ class Chat
             'conversation_id' => 'string',
         ])]
         array $extra = []
-    ) {
-        return $this->client->request('POST', '/v3/chat', [
+    ): RetrieveMessage {
+        $result = $this->client->request('POST', '/v3/chat', [
             'query' => [
                 'conversation_id' => $extra['conversation_id'] ?? '',
             ],
@@ -43,6 +43,8 @@ class Chat
                 'additional_messages' => $messages,
             ],
         ]);
+
+        return RetrieveMessage::jsonDeSerialize($result['data'])->withRawData($result);
     }
 
     public function retrieve(string $chatId, string $conversationId): RetrieveMessage

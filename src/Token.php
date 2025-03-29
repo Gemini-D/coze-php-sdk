@@ -18,7 +18,7 @@ class Token implements TokenInterface
     {
     }
 
-    public function getToken(): string
+    public function getToken(mixed $key = null): string
     {
         return $this->token;
     }

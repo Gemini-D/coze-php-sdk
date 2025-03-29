@@ -14,9 +14,9 @@ namespace Coze\Message;
 
 abstract class RawData
 {
-    public array $rawData = [];
+    public ?array $rawData = null;
 
-    public function withRawData(array $rawData): static
+    public function withRawData(?array $rawData = null): static
     {
         $this->rawData = $rawData;
         return $this;
