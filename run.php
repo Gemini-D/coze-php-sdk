@@ -19,10 +19,11 @@ use Coze\Token;
 require __DIR__ . '/vendor/autoload.php';
 
 $token = new Token(file_get_contents('token.txt'));
+$botId = (string) file_get_contents('bot_id.txt');
 
 $client = new Client($token);
 
-$res = $client->chat->send('7476014622794154010', '123', [
+$res = $client->chat->send($botId, '123', [
     [
         'content' => '请给我一份上海宝山的房源数据',
         'content_type' => 'text',
@@ -33,7 +34,7 @@ $res = $client->chat->send('7476014622794154010', '123', [
 
 $task1 = ChatTask::fromRetrieveMessage($res, 1);
 
-$res = $client->chat->send('7476014622794154010', '1234', [
+$res = $client->chat->send($botId, '1234', [
     [
         'content' => '请给我一份上海嘉定的房源数据',
         'content_type' => 'text',
