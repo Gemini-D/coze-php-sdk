@@ -40,6 +40,12 @@ class Client
 
         $response = $this->client()->request($method, $url, $options);
 
-        return Json::decode((string) $response->getBody());
+        $result = Json::decode((string) $response->getBody());
+
+        if ($result['code'] !== 0) {
+            throw (new RequestException($result['msg'], $result['code']))->withRawData($result);
+        }
+
+        return $result;
     }
 }
