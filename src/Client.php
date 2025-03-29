@@ -19,9 +19,12 @@ class Client
 {
     public Conversation $conversation;
 
+    public Chat $chat;
+
     public function __construct(protected TokenInterface $token)
     {
         $this->conversation = new Conversation($this);
+        $this->chat = new Chat($this);
     }
 
     public function client()
@@ -33,7 +36,7 @@ class Client
 
     public function request(string $method, string $url, array $options = []): array
     {
-        $options['headers']['token'] = $this->token->getToken();
+        $options['headers']['Authorization'] = sprintf('Bearer %s', $this->token->getToken());
 
         $response = $this->client()->request($method, $url, $options);
 

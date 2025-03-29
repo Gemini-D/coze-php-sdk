@@ -18,4 +18,21 @@ $token = new Token(file_get_contents('token.txt'));
 
 $client = new Client($token);
 
-$client->conversation->create();
+$res = $client->chat->send('7476014622794154010', '123', [
+    [
+        'content' => '请给我一份上海宝山的房源数据',
+        'content_type' => 'text',
+        'role' => 'user',
+        'type' => 'question',
+    ],
+]);
+
+var_dump($res);
+
+$chatId = $res['data']['id'];
+$conversationId = $res['data']['conversation_id'];
+
+sleep(1);
+
+$res = $client->chat->retrieve($chatId, $conversationId);
+var_dump($res);
