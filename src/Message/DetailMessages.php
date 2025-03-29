@@ -17,4 +17,24 @@ use JsonSerializable;
 
 class DetailMessages extends RawData implements JsonSerializable, JsonDeSerializable
 {
+    /**
+     * @param DetailMessage[] $messages
+     */
+    public function __construct(public array $messages)
+    {
+    }
+
+    public static function jsonDeSerialize(mixed $data): static
+    {
+        $messages = [];
+        foreach ($data as $message) {
+            $messages[] = DetailMessage::jsonDeserialize($message);
+        }
+        return new static($messages);
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->messages;
+    }
 }

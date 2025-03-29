@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Coze;
 
+use Coze\Message\DetailMessages;
 use Coze\Message\RetrieveMessage;
 use JetBrains\PhpStorm\ArrayShape;
 
@@ -59,9 +60,9 @@ class Chat
         return RetrieveMessage::jsonDeSerialize($result['data'])->withRawData($result);
     }
 
-    public function messages(string $chatId, string $conversationId)
+    public function messages(string $chatId, string $conversationId): DetailMessages
     {
-        return $this->client->request('GET', '/v3/chat/message/list', [
+        $result = $this->client->request('GET', '/v3/chat/message/list', [
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
@@ -70,5 +71,7 @@ class Chat
                 'conversation_id' => $conversationId,
             ],
         ]);
+
+        return DetailMessages::jsonDeserialize($result['data'])->withRawData($result);
     }
 }
